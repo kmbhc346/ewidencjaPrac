@@ -29,6 +29,7 @@ public class Login {
             ResultSet result = QueryExecutor.executeSelect("SELECT * FROM `konta` WHERE identyfikator='" + identyfikatorUSER + "'");
 
             if (result.next()) {
+                int idKontaDATABASE = result.getInt("id_konta");
                 int identyfikatorDATABASE = result.getInt("identyfikator");
                 String hasloDATABASE = result.getString("haslo");
                 String nameDATABASE = result.getString("imie");
@@ -36,9 +37,9 @@ public class Login {
 
                 if (identyfikatorUSER == identyfikatorDATABASE && hasloUSER.equals(hasloDATABASE)) {
                     switch (positionDATABASE) {
-//                        case "administrator" -> ;
+                        case "administrator" -> AdminPanel.home(identyfikatorDATABASE, hasloDATABASE,nameDATABASE);
 
-//                        case "pracownik" ->;
+                        case "pracownik" -> WorkerPanel.home(identyfikatorDATABASE, hasloDATABASE, nameDATABASE, idKontaDATABASE);
                     }
                 } else {
                     System.out.println("Niepoprawne hasło");
