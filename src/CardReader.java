@@ -1,5 +1,9 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -28,7 +32,7 @@ public class CardReader {
 
             if (result.next()) {
 
-                companyMenu();
+                companyMenu(identyfikatorUSER);
 
             } else {
                 System.out.println("Niepoprawny numer Identyfikatora");
@@ -39,13 +43,14 @@ public class CardReader {
         }
     }
 
-    private static void companyMenu() {
+    private static void companyMenu(int identyfikatorUSER) {
         System.out.println(" ");
         System.out.println("||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||");
         System.out.println("||      WIKTORtechnic      ||");
         System.out.println("||_________________________||");
         System.out.println("|| 1. Rozpocznij pracę     ||");
         System.out.println("|| 2. Zakończ pracę        ||");
+        System.out.println("|| 3. Wyjdź                ||");
         System.out.println(" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ ");
 
         int choice;
@@ -53,12 +58,60 @@ public class CardReader {
             System.out.print("Wybierz opcję: ");
             try {
                 choice = scanner.nextInt();
+                scanner.nextLine();
+
                 switch (choice) {
-                    case 1 -> System.out.println("warunek1");
-                    case 2 -> System.out.println("warunek2");
+                    case 1 -> {
+                        try {
+                            ResultSet result = QueryExecutor.executeSelect("SELECT * FROM `konta` WHERE identyfikator='" + identyfikatorUSER + "'");
+                            if (result.next()) {
+                                int idKonta = result.getInt("id_konta");
+
+                                QueryExecutor.executeQuery("INSERT INTO `rejestrowane_godziny`(`id_konta`,`godzina_zakonczenia`) VALUES ('" + idKonta + "', NULL)");
+
+                                System.out.println("Wprowadzono dane do systemu.");
+                                companyMenu(identyfikatorUSER);
+                            } else {
+                                cardRead();
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    case 2 -> {
+                        try {
+                            ResultSet result = QueryExecutor.executeSelect("SELECT * FROM `konta` WHERE identyfikator='" + identyfikatorUSER + "'");
+                            if (result.next()) {
+                                int idKonta = result.getInt("id_konta");
+
+                                try {
+                                    ResultSet result2 = QueryExecutor.executeSelect("SELECT * FROM `rejestrowane_godziny` WHERE id_konta='" + idKonta + "' ORDER BY `rejestrowane_godziny`.`id` DESC");
+                                    if (result2.next()) {
+                                        Time startHour = result2.getTime("godzina_rozpoczecia");
+
+                                        LocalTime czas = LocalTime.now();
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+                                        QueryExecutor.executeQuery("UPDATE `rejestrowane_godziny` SET `godzina_zakonczenia`='"+czas.format(formatter)+"' WHERE `id_konta`= '"+idKonta+"' AND `godzina_rozpoczecia` = '"+startHour+"'");
+
+                                        StartPage.home();
+                                    }
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                cardRead();
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    case 3 -> {
+                        StartPage.home();
+                    }
                     default -> {
                         System.out.println("Nieprawidłowy wybór. Spróbuj ponownie.");
-                        companyMenu();
+                        companyMenu(identyfikatorUSER);
                     }
                 }
                 break;
@@ -68,6 +121,4 @@ public class CardReader {
             }
         }
     }
-
-
 }
