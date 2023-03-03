@@ -1,7 +1,6 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -46,7 +45,7 @@ public class WorkerPanel {
                     System.out.println(" ");
                     try {
 
-                        ResultSet resultSelect = QueryExecutor.executeSelect("SELECT zmiany.nazwa, harmonogram_pracy.data_od, harmonogram_pracy.data_do, zmiany.godzina_rozpoczecia, zmiany.godzina_zakonczenia FROM `harmonogram_pracy` INNER JOIN konta ON harmonogram_pracy.id_konta = konta.id_konta INNER JOIN zmiany ON harmonogram_pracy.id_zmiany = zmiany.id_zmiany WHERE harmonogram_pracy.id_konta = '"+idKontaDATABASE+"'");
+                        ResultSet resultSelect = QueryExecutor.executeSelect("SELECT zmiany.nazwa, harmonogram_pracy.data_od, harmonogram_pracy.data_do, zmiany.godzina_rozpoczecia, zmiany.godzina_zakonczenia FROM `harmonogram_pracy` INNER JOIN konta ON harmonogram_pracy.id_konta = konta.id_konta INNER JOIN zmiany ON harmonogram_pracy.id_zmiany = zmiany.id_zmiany WHERE harmonogram_pracy.id_konta = '" + idKontaDATABASE + "'");
 
                         while (resultSelect.next()) {
 
@@ -75,7 +74,7 @@ public class WorkerPanel {
                     System.out.println("||   Ustawienia   ||");
                     System.out.println("||________________||");
 
-                    Settings.changePassword(identyfikatorDATABASE, hasloDATABASE );
+                    Settings.changePassword(identyfikatorDATABASE, hasloDATABASE);
 
                     System.out.println(" ");
                     System.out.println("1. Wróć");

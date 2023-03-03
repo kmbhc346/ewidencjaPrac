@@ -62,6 +62,7 @@ public class CardReader {
                         boolean godzina_zakonczenia = result2.getBoolean("godzina_zakonczenia");
 
                         if (!godzina_zakonczenia) {
+                            System.out.println("|| 1. Rozpocznij pracę     ||");
                             System.out.println("|| 2. Zakończ pracę        ||");
                             System.out.println("|| 3. Wyjdź                ||");
                             System.out.println(" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ ");
@@ -74,6 +75,10 @@ public class CardReader {
                                     scanner.nextLine();
 
                                     switch (choice) {
+                                        case 1 -> {
+                                            System.out.println("Najpierw zakończ aktualną sesję");
+                                            companyMenu(identyfikatorUSER);
+                                        }
                                         case 2 -> {
                                             try {
                                                 ResultSet result3 = QueryExecutor.executeSelect("SELECT * FROM `rejestrowane_godziny` WHERE id_konta='" + idKonta + "' ORDER BY `rejestrowane_godziny`.`id` DESC");
@@ -107,6 +112,7 @@ public class CardReader {
                         }
                     } else {
                         System.out.println("|| 1. Rozpocznij pracę     ||");
+                        System.out.println("|| 2. Zakończ pracę        ||");
                         System.out.println("|| 3. Wyjdź                ||");
                         System.out.println(" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ ");
 
@@ -121,6 +127,10 @@ public class CardReader {
                                     case 1 -> {
                                         QueryExecutor.executeQuery("INSERT INTO `rejestrowane_godziny`(`id_konta`,`godzina_zakonczenia`) VALUES ('" + idKonta + "', NULL)");
                                         System.out.println("Wprowadzono dane do systemu.");
+                                        companyMenu(identyfikatorUSER);
+                                    }
+                                    case 2 -> {
+                                        System.out.println("Najpierw rozpocznij sesję");
                                         companyMenu(identyfikatorUSER);
                                     }
                                     case 3 -> StartPage.home();
